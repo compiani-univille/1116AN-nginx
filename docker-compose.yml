@@ -1,6 +1,18 @@
 version: '3.0'
 
 services:
+  service-discovery:
+    build:
+      context: ./service-discovery
+    container_name: service-discovery
+    ports:
+     - "8080:8080"
+    volumes:
+     - ./service-discovery:/app
+     - ~/.m2:/root/.m2
+    networks:
+     - app-network
+
   demo1:
     build:
       context: ./demo1
@@ -10,6 +22,22 @@ services:
     volumes:
      - ./demo1:/app
      - ~/.m2:/root/.m2
+    depends_on:
+     - service-discovery
+    networks:
+     - app-network
+
+  demo1-2:
+    build:
+      context: ./demo1
+    container_name: demo1-2
+    ports:
+     - "8090:8080"
+    volumes:
+     - ./demo1:/app
+     - ~/.m2:/root/.m2
+    depends_on:
+     - service-discovery
     networks:
      - app-network
   demo2:
@@ -21,6 +49,21 @@ services:
     volumes:
      - ./demo2:/app
      - ~/.m2:/root/.m2
+    depends_on:
+     - service-discovery
+    networks:
+     - app-network
+  gateway-service:
+    build:
+      context: ./gateway-service
+    container_name: gateway-service
+    ports:
+     - "8083:8080"
+    volumes:
+     - ./gateway-service:/app
+     - ~/.m2:/root/.m2
+    depends_on:
+     - service-discovery
     networks:
      - app-network
   nginx:
