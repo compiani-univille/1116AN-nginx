@@ -53,6 +53,19 @@ services:
      - service-discovery
     networks:
      - app-network
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: auth-service
+    ports:
+     - "8084:8080"
+    volumes:
+     - ./auth-service:/app
+     - ~/.m2:/root/.m2
+    depends_on:
+     - service-discovery
+    networks:
+     - app-network
   gateway-service:
     build:
       context: ./gateway-service
