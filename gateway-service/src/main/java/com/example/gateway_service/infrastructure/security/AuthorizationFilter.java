@@ -91,7 +91,7 @@ public class AuthorizationFilter implements WebFilter {
     // Verifica a permissão para a rota
     if (!isAuthorized(path, role)) {
         exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-        exchange.getResponse().setComplete();
+        return exchange.getResponse().setComplete();
     }
 
     return chain.filter(exchange);

@@ -15,4 +15,14 @@ public class HelloController {
     public String name() {
         return "Demo 1";
     }
+
+    @GetMapping("/waiter")
+    public String waiter() {
+        return "Demo 1 - waiter";
+    }
+
+    @GetMapping("/customer")
+    public String customer() {
+        return "Demo 1 - customer";
+    }
 }
