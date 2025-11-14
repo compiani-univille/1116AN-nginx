@@ -6,6 +6,9 @@ import com.example.authservice.domain.user.UserRepository;
 import com.example.authservice.domain.user.vo.Email;
 import com.example.authservice.domain.user.vo.RoleType;
 import com.example.authservice.interfaces.rest.dto.UserResponse;
+import com.example.authservice.messaging.events.UserCreatedEvent;
+import com.example.authservice.messaging.events.UserCreatedPublisher;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class RegisterUserHandler {
     private final UserRepository userRepository;
     private final PasswordHasher passwordHasher;
+    private final UserCreatedPublisher userCreatedPublisher;
 
     public UserResponse handle(String name, String email, String password) {
         Email emailObj = Email.of(email);
@@ -27,6 +31,15 @@ public class RegisterUserHandler {
         User user = new User(name, emailObj, RoleType.CUSTOMER, hashedPassword);
 
         User savedUser = userRepository.save(user);
+
+        userCreatedPublisher.publish(
+            new UserCreatedEvent(
+                savedUser.getId(),
+                savedUser.getName(),
+                savedUser.getEmail().getValue(),
+                savedUser.getRole().getValue().name()
+            )
+        );
 
         return new UserResponse(
                 savedUser.getId(),
